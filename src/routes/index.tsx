@@ -348,7 +348,7 @@ function Index() {
                   <figcaption className="p-4">
                     <p className="font-display text-xl uppercase">{p.n}</p>
                     <p className="mt-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                      Tallas: S · M · X · XL
+                      Tallas: S · M · L · XL
                     </p>
                   </figcaption>
                 </figure>

@@ -146,7 +146,7 @@ function LaunchCountdown() {
   return (
     <div
       className="mt-8"
-      aria-label="Cuenta regresiva para el lanzamiento del 19 de noviembre a medianoche, hora de Perú"
+      aria-label="Cuenta regresiva para el lanzamiento del 19 de noviembre a medianoche"
     >
       <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">
         Lanzamiento en
@@ -169,12 +169,6 @@ function LaunchCountdown() {
           </div>
         ))}
       </div>
-      <time
-        dateTime="2026-11-19T00:00:00-05:00"
-        className="mt-3 block text-xs text-muted-foreground"
-      >
-        19 de noviembre · 00:00 h · Perú
-      </time>
     </div>
   );
 }

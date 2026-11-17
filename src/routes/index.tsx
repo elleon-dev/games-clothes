@@ -6,6 +6,8 @@ import pareja from "@/assets/jason-lucia-pareja.png";
 import jason from "@/assets/polo-jason.jpeg";
 import lucia from "@/assets/polo-lucia.jpeg";
 import poloNegro from "@/assets/polonegro.png";
+import poloBlanco from "@/assets/poloblanco.png";
+import viceCityNegro from "@/assets/polo_negro.png";
 import blanco from "@/assets/polo_blanco.jpg";
 
 export const Route = createFileRoute("/")({
@@ -47,7 +49,18 @@ const nav = [
   { href: "#contacto", label: "Contacto" },
 ];
 
-const individuales = [
+type ColorVariant = "Blanco" | "Negro";
+
+type IndividualProduct = {
+  img: string;
+  name: string;
+  desc: string;
+  price: string;
+  hasColorVariants?: boolean;
+  colorImages?: Record<ColorVariant, string>;
+};
+
+const individuales: IndividualProduct[] = [
   {
     img: jason,
     name: "Polo Jason",
@@ -66,6 +79,7 @@ const individuales = [
     desc: "Polo negro · Manatí surfer",
     price: "S/ 99",
     hasColorVariants: true,
+    colorImages: { Blanco: poloBlanco, Negro: poloNegro },
   },
   {
     img: blanco,
@@ -73,6 +87,7 @@ const individuales = [
     desc: "Polo blanco · Gator cocktail",
     price: "S/ 99",
     hasColorVariants: true,
+    colorImages: { Blanco: blanco, Negro: viceCityNegro },
   },
 ];
 
@@ -88,6 +103,10 @@ type OrderProduct = {
 
 const sizes = ["S", "M", "X", "XL"];
 const whatsappNumber = "51972332824";
+const colorOptions: Array<{ label: ColorVariant; className: string }> = [
+  { label: "Blanco", className: "border-border bg-white text-black" },
+  { label: "Negro", className: "border-white/30 bg-black text-white" },
+];
 
 function scrollToSection(sectionId: string) {
   const section = document.getElementById(sectionId);
@@ -186,10 +205,10 @@ function Index() {
     "Vice City Leonida": "M",
   });
   const [individualColors, setIndividualColors] = useState<
-    Record<string, string>
+    Record<string, ColorVariant>
   >({
-    "Leonida Surf": "Negro",
-    "Vice City Leonida": "Blanco",
+    "Leonida Surf": "Blanco",
+    "Vice City Leonida": "Negro",
   });
   const [jasonSize, setJasonSize] = useState("M");
   const [luciaSize, setLuciaSize] = useState("M");
@@ -389,69 +408,74 @@ function Index() {
             title="Individuales"
           />
           <div className="grid gap-10 sm:grid-cols-2">
-            {individuales.map((p) => (
-              <article
-                key={p.name}
-                className="group overflow-hidden rounded-md border border-border bg-card"
-              >
-                <img
-                  src={p.img}
-                  alt={p.name}
-                  loading="lazy"
-                  className="aspect-square w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-                <div className="flex flex-col gap-5 p-6 sm:flex-row sm:items-end sm:justify-between">
-                  <div className="w-full">
-                    <h3 className="font-display text-2xl uppercase">
-                      {p.name}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">{p.desc}</p>
-                    <div className="mt-4">
-                      {p.hasColorVariants && (
-                        <ColorPicker
-                          value={individualColors[p.name] ?? "Negro"}
-                          onChange={(color) =>
-                            setIndividualColors((current) => ({
+            {individuales.map((p) => {
+              const selectedColor = individualColors[p.name] ?? "Negro";
+              const selectedImage = p.colorImages?.[selectedColor] ?? p.img;
+
+              return (
+                <article
+                  key={p.name}
+                  className="group overflow-hidden rounded-md border border-border bg-card"
+                >
+                  <img
+                    src={selectedImage}
+                    alt={`${p.name} · color ${selectedColor}`}
+                    loading="lazy"
+                    className="aspect-square w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <div className="flex flex-col gap-5 p-6 sm:flex-row sm:items-end sm:justify-between">
+                    <div className="w-full">
+                      <h3 className="font-display text-2xl uppercase">
+                        {p.name}
+                      </h3>
+                      <p className="text-sm text-muted-foreground">{p.desc}</p>
+                      <div className="mt-4">
+                        {p.hasColorVariants && (
+                          <ColorPicker
+                            value={selectedColor}
+                            onChange={(color) =>
+                              setIndividualColors((current) => ({
+                                ...current,
+                                [p.name]: color,
+                              }))
+                            }
+                          />
+                        )}
+                        <CardSizePicker
+                          label="Elige tu talla"
+                          value={individualSizes[p.name] ?? "M"}
+                          onChange={(size) =>
+                            setIndividualSizes((current) => ({
                               ...current,
-                              [p.name]: color,
+                              [p.name]: size,
                             }))
                           }
                         />
-                      )}
-                      <CardSizePicker
-                        label="Elige tu talla"
-                        value={individualSizes[p.name] ?? "M"}
-                        onChange={(size) =>
-                          setIndividualSizes((current) => ({
-                            ...current,
-                            [p.name]: size,
-                          }))
-                        }
-                      />
+                      </div>
+                      <p className="mt-2 font-display text-2xl text-vice">
+                        {p.price}
+                      </p>
                     </div>
-                    <p className="mt-2 font-display text-2xl text-vice">
-                      {p.price}
-                    </p>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setSelectedProduct({
+                          name: p.name,
+                          price: p.price,
+                          size: individualSizes[p.name] ?? "M",
+                          ...(p.hasColorVariants
+                            ? { color: selectedColor }
+                            : {}),
+                        })
+                      }
+                      className="w-full rounded-sm border border-primary px-6 py-3 font-display uppercase tracking-widest text-primary transition-colors hover:bg-primary hover:text-primary-foreground sm:w-auto"
+                    >
+                      Solicitar
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setSelectedProduct({
-                        name: p.name,
-                        price: p.price,
-                        size: individualSizes[p.name] ?? "M",
-                        ...(p.hasColorVariants
-                          ? { color: individualColors[p.name] ?? "Negro" }
-                          : {}),
-                      })
-                    }
-                    className="w-full rounded-sm border border-primary px-6 py-3 font-display uppercase tracking-widest text-primary transition-colors hover:bg-primary hover:text-primary-foreground sm:w-auto"
-                  >
-                    Solicitar
-                  </button>
-                </div>
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </div>
         </section>
       </main>
@@ -500,6 +524,10 @@ function Index() {
         </div>
         <div className="border-t border-border py-6 text-center text-xs text-muted-foreground">
           © 2026 Games Clothes. Producto de Fans.
+          <span className="mt-1 block opacity-70">
+            No estamos afiliados, patrocinados ni respaldados por Take-Two
+            Interactive ni Rockstar Games.
+          </span>
         </div>
       </footer>
       {selectedProduct && (
@@ -617,8 +645,8 @@ function ColorPicker({
   value,
   onChange,
 }: {
-  value: string;
-  onChange: (color: string) => void;
+  value: ColorVariant;
+  onChange: (color: ColorVariant) => void;
 }) {
   return (
     <fieldset className="mb-4">
@@ -626,10 +654,7 @@ function ColorPicker({
         Elige color
       </legend>
       <div className="flex gap-2">
-        {[
-          { label: "Blanco", className: "border-border bg-white text-black" },
-          { label: "Negro", className: "border-white/30 bg-black text-white" },
-        ].map((color) => (
+        {colorOptions.map((color) => (
           <button
             key={color.label}
             type="button"

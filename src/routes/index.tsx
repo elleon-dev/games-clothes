@@ -5,7 +5,7 @@ import { FaWhatsapp } from "react-icons/fa";
 import pareja from "@/assets/jason-lucia-pareja.png";
 import jason from "@/assets/polo-jason.jpeg";
 import lucia from "@/assets/polo-lucia.jpeg";
-import leonida from "@/assets/leonida.jpg";
+import poloNegro from "@/assets/polonegro.png";
 import blanco from "@/assets/polo_blanco.jpg";
 
 export const Route = createFileRoute("/")({
@@ -61,16 +61,18 @@ const individuales = [
     price: "S/ 99",
   },
   {
-    img: leonida,
+    img: poloNegro,
     name: "Leonida Surf",
     desc: "Polo negro · Manatí surfer",
     price: "S/ 99",
+    hasColorVariants: true,
   },
   {
     img: blanco,
     name: "Vice City Leonida",
     desc: "Polo blanco · Gator cocktail",
     price: "S/ 99",
+    hasColorVariants: true,
   },
 ];
 
@@ -79,6 +81,7 @@ type OrderProduct = {
   price: string;
   isCombo?: boolean;
   size?: string;
+  color?: string;
   jasonSize?: string;
   luciaSize?: string;
 };
@@ -187,6 +190,12 @@ function Index() {
     "Polo Lucia": "M",
     "Leonida Surf": "M",
     "Vice City Leonida": "M",
+  });
+  const [individualColors, setIndividualColors] = useState<
+    Record<string, string>
+  >({
+    "Leonida Surf": "Negro",
+    "Vice City Leonida": "Blanco",
   });
   const [jasonSize, setJasonSize] = useState("M");
   const [luciaSize, setLuciaSize] = useState("M");
@@ -404,6 +413,17 @@ function Index() {
                     </h3>
                     <p className="text-sm text-muted-foreground">{p.desc}</p>
                     <div className="mt-4">
+                      {p.hasColorVariants && (
+                        <ColorPicker
+                          value={individualColors[p.name] ?? "Negro"}
+                          onChange={(color) =>
+                            setIndividualColors((current) => ({
+                              ...current,
+                              [p.name]: color,
+                            }))
+                          }
+                        />
+                      )}
                       <CardSizePicker
                         label="Elige tu talla"
                         value={individualSizes[p.name] ?? "M"}
@@ -426,6 +446,9 @@ function Index() {
                         name: p.name,
                         price: p.price,
                         size: individualSizes[p.name] ?? "M",
+                        ...(p.hasColorVariants
+                          ? { color: individualColors[p.name] ?? "Negro" }
+                          : {}),
                       })
                     }
                     className="w-full rounded-sm border border-primary px-6 py-3 font-display uppercase tracking-widest text-primary transition-colors hover:bg-primary hover:text-primary-foreground sm:w-auto"
@@ -505,8 +528,9 @@ function OrderModal({
   const detail = product.isCombo
     ? `Tallas: Jason ${product.jasonSize}, Lucia ${product.luciaSize}`
     : `Talla: ${product.size}`;
+  const colorDetail = product.color ? `\nColor: ${product.color}` : "";
   const message = encodeURIComponent(
-    `Hola, quiero solicitar: ${product.name}\nPrecio: ${product.price}\n${detail}\n\nPagaré por Yape al +51 972 332 824.`,
+    `Hola, quiero solicitar: ${product.name}\nPrecio: ${product.price}${colorDetail}\n${detail}\n\nPagaré por Yape al +51 972 332 824.`,
   );
 
   return (
@@ -546,15 +570,23 @@ function OrderModal({
             Talla seleccionada
           </p>
           <p className="mt-2 font-display text-xl uppercase">{detail}</p>
+          {product.color && (
+            <p className="mt-2 text-sm text-muted-foreground">
+              Color: {product.color}
+            </p>
+          )}
         </div>
 
         <div className="mt-6 rounded-sm border border-accent/40 bg-background p-4">
           <p className="font-display text-lg uppercase text-accent">
             Pago por Yape
           </p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Tu pedido estará listo para el 19 de noviembre.
+          </p>
           <p
             id="order-description"
-            className="mt-1 text-sm text-muted-foreground"
+            className="mt-3 text-sm text-muted-foreground"
           >
             Realiza el pago al siguiente número y envía la constancia por
             WhatsApp.
@@ -584,6 +616,38 @@ function OrderModal({
         </a>
       </div>
     </div>
+  );
+}
+
+function ColorPicker({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (color: string) => void;
+}) {
+  return (
+    <fieldset className="mb-4">
+      <legend className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+        Elige color
+      </legend>
+      <div className="flex gap-2">
+        {[
+          { label: "Blanco", className: "border-border bg-white text-black" },
+          { label: "Negro", className: "border-white/30 bg-black text-white" },
+        ].map((color) => (
+          <button
+            key={color.label}
+            type="button"
+            onClick={() => onChange(color.label)}
+            className={`rounded-sm border px-3 py-1.5 text-sm font-semibold transition-transform ${color.className} ${value === color.label ? "ring-2 ring-vice ring-offset-2 ring-offset-card" : "opacity-65 hover:opacity-100"}`}
+            aria-pressed={value === color.label}
+          >
+            {color.label}
+          </button>
+        ))}
+      </div>
+    </fieldset>
   );
 }
 

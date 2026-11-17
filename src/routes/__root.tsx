@@ -18,7 +18,9 @@ function NotFoundComponent() {
     <main className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Página no encontrada</h2>
+        <h2 className="mt-4 text-xl font-semibold text-foreground">
+          Página no encontrada
+        </h2>
         <p className="mt-2 text-sm text-muted-foreground">
           La página que buscas no existe o fue movida.
         </p>
@@ -45,7 +47,9 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
   return (
     <main className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">No se pudo cargar la página</h1>
+        <h1 className="text-xl font-semibold tracking-tight text-foreground">
+          No se pudo cargar la página
+        </h1>
         <p className="mt-2 text-sm text-muted-foreground">
           Ocurrió un error. Puedes volver a intentarlo o regresar al inicio.
         </p>
@@ -71,39 +75,52 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
   );
 }
 
-export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
-  head: () => ({
-    // Replace these placeholders with the app's name and description when first building the app.
-    // Each content route, / included, must still set its own head(). Never add og:image or
-    // twitter:image here: every page without its own would inherit the root's preview image.
-    meta: [
-      { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Games Clothes — Polos GTA VI" },
-      { name: "description", content: "Polos inspirados en GTA VI: combos para parejas y diseños de Leonida." },
-      { name: "author", content: "Games Clothes" },
-      { name: "theme-color", content: "#241026" },
-      { property: "og:title", content: "Games Clothes — Polos GTA VI" },
-      { property: "og:description", content: "Polos inspirados en GTA VI: combos para parejas y diseños de Leonida." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
-    ],
-    links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600;700&display=swap" },
-      { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
-    ],
-  }),
-  shellComponent: RootShell,
-  component: RootComponent,
-  notFoundComponent: NotFoundComponent,
-  errorComponent: ErrorComponent,
-});
+export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
+  {
+    head: () => ({
+      // Replace these placeholders with the app's name and description when first building the app.
+      // Each content route, / included, must still set its own head(). Never add og:image or
+      // twitter:image here: every page without its own would inherit the root's preview image.
+      meta: [
+        { charSet: "utf-8" },
+        { name: "viewport", content: "width=device-width, initial-scale=1" },
+        { title: "Games Clothes — Polos GTA VI" },
+        {
+          name: "description",
+          content:
+            "Polos inspirados en GTA VI: combos para parejas y diseños de Leonida.",
+        },
+        { name: "author", content: "Games Clothes" },
+        { name: "theme-color", content: "#241026" },
+        { property: "og:title", content: "Games Clothes — Polos GTA VI" },
+        {
+          property: "og:description",
+          content:
+            "Polos inspirados en GTA VI: combos para parejas y diseños de Leonida.",
+        },
+        { property: "og:type", content: "website" },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:site", content: "@Lovable" },
+      ],
+      links: [
+        {
+          rel: "stylesheet",
+          href: appCss,
+        },
+        { rel: "preconnect", href: "https://fonts.googleapis.com" },
+        {
+          rel: "stylesheet",
+          href: "https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600;700&display=swap",
+        },
+        { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
+      ],
+    }),
+    shellComponent: RootShell,
+    component: RootComponent,
+    notFoundComponent: NotFoundComponent,
+    errorComponent: ErrorComponent,
+  },
+);
 
 function RootShell({ children }: { children: ReactNode }) {
   return (

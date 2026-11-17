@@ -356,7 +356,7 @@ function Index() {
                     <div className="mt-4">
                       <CardSizePicker
                         label="Elige tu talla"
-                        value={individualSizes[p.name]}
+                        value={individualSizes[p.name] ?? "M"}
                         onChange={(size) =>
                           setIndividualSizes((current) => ({
                             ...current,
@@ -375,7 +375,7 @@ function Index() {
                       setSelectedProduct({
                         name: p.name,
                         price: p.price,
-                        size: individualSizes[p.name],
+                        size: individualSizes[p.name] ?? "M",
                       })
                     }
                     className="rounded-sm border border-primary px-6 py-3 font-display uppercase tracking-widest text-primary transition-colors hover:bg-primary hover:text-primary-foreground"

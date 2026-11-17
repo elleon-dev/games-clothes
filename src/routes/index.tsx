@@ -1,4 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { X } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
 import pareja from "@/assets/jason-lucia-pareja.png";
 import jason from "@/assets/polo-jason.jpeg";
 import lucia from "@/assets/polo-lucia.jpeg";
@@ -9,9 +12,13 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Games Clothes | Viste el mejor skin de GTA VI" },
-      { name: "description", content: "Polos inspirados en GTA VI: combo pareja Jason & Lucia y diseños exclusivos de Leonida y Vice City." },
+      { name: "description", content: "Compra polos inspirados en GTA VI en Perú. Diseños Leonida y Vice City, tallas S a XL, combo para pareja y pedidos por WhatsApp." },
+      { name: "keywords", content: "polos GTA VI, ropa gamer Perú, polos Leonida, polos Vice City, Games Clothes" },
+      { name: "robots", content: "index, follow" },
+      { name: "theme-color", content: "#241026" },
+      { name: "application-name", content: "Games Clothes" },
       { property: "og:title", content: "Games Clothes | Viste el mejor skin de GTA VI" },
-      { property: "og:description", content: "Combo pareja Jason & Lucia y polos de Leonida. Lanzamiento 19 de noviembre." },
+      { property: "og:description", content: "Polos inspirados en GTA VI con tallas S a XL. Compra individual o el combo Jason & Lucia." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -26,29 +33,98 @@ const nav = [
 ];
 
 const individuales = [
-  { img: leonida, name: "Leonida Surf", desc: "Polo negro · Manatí surfer", price: "S/ 59" },
-  { img: blanco, name: "Vice City Leonida", desc: "Polo blanco · Gator cocktail", price: "S/ 59" },
+  { img: leonida, name: "Leonida Surf", desc: "Polo negro · Manatí surfer", price: "S/ 99" },
+  { img: blanco, name: "Vice City Leonida", desc: "Polo blanco · Gator cocktail", price: "S/ 99" },
 ];
+
+type OrderProduct = {
+  name: string;
+  price: string;
+  isCombo?: boolean;
+  size?: string;
+  jasonSize?: string;
+  luciaSize?: string;
+};
+
+const sizes = ["S", "M", "X", "XL"];
+const whatsappNumber = "51972332824";
+
+function scrollToSection(sectionId: string) {
+  const section = document.getElementById(sectionId);
+  const headerHeight = document.querySelector("header")?.getBoundingClientRect().height ?? 0;
+
+  if (section) {
+    const position = window.scrollY + section.getBoundingClientRect().top - headerHeight;
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: Math.max(0, position), behavior: prefersReducedMotion ? "auto" : "smooth" });
+  }
+}
 
 function Logo() {
   return (
-    <a href="#top" className="font-display text-3xl leading-none tracking-tight text-vice" aria-label="Games Clothes">
+    <button type="button" onClick={() => scrollToSection("top")} className="font-display text-3xl leading-none tracking-tight text-vice" aria-label="Volver al inicio">
       GC
-    </a>
+    </button>
+  );
+}
+
+function LaunchCountdown() {
+  const [remaining, setRemaining] = useState<number | null>(null);
+
+  useEffect(() => {
+    const launchTime = new Date("2026-11-19T00:00:00-05:00").getTime();
+    const updateCountdown = () => setRemaining(Math.max(0, launchTime - Date.now()));
+
+    updateCountdown();
+    const timer = window.setInterval(updateCountdown, 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  if (remaining === null || remaining === 0) return null;
+
+  const totalSeconds = Math.floor(remaining / 1000);
+  const units = [
+    { label: "Días", value: Math.floor(totalSeconds / 86_400) },
+    { label: "Horas", value: Math.floor((totalSeconds % 86_400) / 3_600) },
+    { label: "Min", value: Math.floor((totalSeconds % 3_600) / 60) },
+    { label: "Seg", value: totalSeconds % 60 },
+  ];
+
+  return (
+    <div className="mt-8" aria-label="Cuenta regresiva para el lanzamiento del 19 de noviembre a medianoche, hora de Perú">
+      <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">Lanzamiento en</p>
+      <div className="mx-auto mt-3 flex max-w-sm justify-center gap-2" aria-hidden="true">
+        {units.map((unit) => (
+          <div key={unit.label} className="min-w-14 rounded-sm border border-primary/40 bg-background/70 px-2 py-2 text-center backdrop-blur">
+            <p className="font-display text-2xl leading-none text-primary">{String(unit.value).padStart(2, "0")}</p>
+            <p className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{unit.label}</p>
+          </div>
+        ))}
+      </div>
+      <time dateTime="2026-11-19T00:00:00-05:00" className="mt-3 block text-xs text-muted-foreground"></time>
+    </div>
   );
 }
 
 function Index() {
+  const [selectedProduct, setSelectedProduct] = useState<OrderProduct | null>(null);
+  const [individualSizes, setIndividualSizes] = useState<Record<string, string>>({
+    "Leonida Surf": "M",
+    "Vice City Leonida": "M",
+  });
+  const [jasonSize, setJasonSize] = useState("M");
+  const [luciaSize, setLuciaSize] = useState("M");
+
   return (
     <div id="top" className="min-h-screen bg-background text-foreground">
       <header className="fixed inset-x-0 top-0 z-50 border-b border-border bg-background/70 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <Logo />
-          <nav className="flex gap-6 text-sm font-semibold uppercase tracking-widest">
+          <nav aria-label="Navegación principal" className="flex gap-6 font-display text-base uppercase tracking-[0.12em]">
             {nav.map((n) => (
-              <a key={n.href} href={n.href} className="text-muted-foreground transition-colors hover:text-primary">
+              <button key={n.href} type="button" onClick={() => scrollToSection(n.href.slice(1))} className="text-muted-foreground transition-colors hover:text-primary">
                 {n.label}
-              </a>
+              </button>
             ))}
           </nav>
         </div>
@@ -73,15 +149,17 @@ function Index() {
             <br />
             con el mejor <span className="text-vice">skin</span>
           </h1>
-          <a href="#pareja" className="mt-10 inline-block rounded-sm bg-vice px-8 py-4 font-display text-lg uppercase tracking-widest text-primary-foreground shadow-glow transition-transform hover:scale-105">
+          <LaunchCountdown />
+          <button type="button" onClick={() => scrollToSection("pareja")} className="mt-10 inline-block rounded-sm bg-vice px-8 py-4 font-display text-lg uppercase tracking-widest text-primary-foreground shadow-glow transition-transform hover:scale-105">
             Ver colección
-          </a>
+          </button>
         </div>
-        <a href="#pareja" aria-label="Bajar" className="absolute bottom-8 z-10 animate-bounce text-3xl text-primary">▼</a>
+        <button type="button" onClick={() => scrollToSection("pareja")} aria-label="Ir a la sección Combo Pareja" className="absolute bottom-8 z-10 animate-bounce text-3xl text-primary">▼</button>
       </section>
 
-      <section id="pareja" className="mx-auto max-w-7xl px-6 py-28">
-        <SectionTitle kicker="Jason & Lucia" title="Combo Pareja" />
+      <main>
+      <section id="pareja" className="mx-auto max-w-7xl scroll-mt-24 px-6 py-28" aria-labelledby="pareja-title">
+        <SectionTitle id="pareja-title" kicker="Jason & Lucia" title="Combo Pareja" />
         <div className="grid items-stretch gap-10 md:grid-cols-2">
           <figure className="group overflow-hidden rounded-md border border-border bg-card">
             <img src={pareja} alt="Jason y Lucia con los polos del combo" loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
@@ -90,7 +168,10 @@ function Index() {
             {[{ img: jason, n: "Polo Jason" }, { img: lucia, n: "Polo Lucia" }].map((p) => (
               <figure key={p.n} className="group overflow-hidden rounded-md border border-border bg-card">
                 <img src={p.img} alt={p.n} loading="lazy" className="aspect-square w-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                <figcaption className="p-4 font-display text-xl uppercase">{p.n}</figcaption>
+                <figcaption className="p-4">
+                  <p className="font-display text-xl uppercase">{p.n}</p>
+                  <p className="mt-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">Tallas: S · M · X · XL</p>
+                </figcaption>
               </figure>
             ))}
           </div>
@@ -99,13 +180,17 @@ function Index() {
           <p className="text-sm uppercase tracking-widest text-accent">Bonnie & Clyde edition</p>
           <h3 className="mt-3 font-display text-4xl uppercase">Ellos dos. <span className="text-vice">Tú y yo.</span></h3>
           <p className="mt-4 text-muted-foreground">Dos polos inspirados en los protagonistas de GTA VI. Ideal para el día del lanzamiento.</p>
-          <p className="mt-6 font-display text-5xl">S/ 109</p>
-          <a href="#contacto" className="mt-6 inline-block rounded-sm bg-vice px-10 py-4 font-display uppercase tracking-widest text-primary-foreground shadow-glow">Solicitar combo</a>
+          <div className="mt-6 grid gap-4 text-left sm:grid-cols-2">
+            <CardSizePicker label="Talla Jason" value={jasonSize} onChange={setJasonSize} />
+            <CardSizePicker label="Talla Lucia" value={luciaSize} onChange={setLuciaSize} />
+          </div>
+          <p className="mt-6 font-display text-5xl">S/ 179</p>
+          <button type="button" onClick={() => setSelectedProduct({ name: "Combo Pareja Jason & Lucia", price: "S/ 179", isCombo: true, jasonSize, luciaSize })} className="mt-6 inline-block rounded-sm bg-vice px-10 py-4 font-display uppercase tracking-widest text-primary-foreground shadow-glow transition-transform hover:scale-105">Solicitar combo</button>
         </div>
       </section>
 
-      <section id="individuales" className="mx-auto max-w-7xl px-6 py-28">
-        <SectionTitle kicker="Welcome to Leonida" title="Individuales" />
+      <section id="individuales" className="mx-auto max-w-7xl scroll-mt-24 px-6 py-28" aria-labelledby="individuales-title">
+        <SectionTitle id="individuales-title" kicker="Welcome to Leonida" title="Individuales" />
         <div className="grid gap-10 sm:grid-cols-2">
           {individuales.map((p) => (
             <article key={p.name} className="group overflow-hidden rounded-md border border-border bg-card">
@@ -114,16 +199,20 @@ function Index() {
                 <div>
                   <h3 className="font-display text-2xl uppercase">{p.name}</h3>
                   <p className="text-sm text-muted-foreground">{p.desc}</p>
+                  <div className="mt-4">
+                    <CardSizePicker label="Elige tu talla" value={individualSizes[p.name]} onChange={(size) => setIndividualSizes((current) => ({ ...current, [p.name]: size }))} />
+                  </div>
                   <p className="mt-2 font-display text-2xl text-vice">{p.price}</p>
                 </div>
-                <a href="#contacto" className="rounded-sm border border-primary px-6 py-3 font-display uppercase tracking-widest text-primary transition-colors hover:bg-primary hover:text-primary-foreground">Solicitar</a>
+                <button type="button" onClick={() => setSelectedProduct({ name: p.name, price: p.price, size: individualSizes[p.name] })} className="rounded-sm border border-primary px-6 py-3 font-display uppercase tracking-widest text-primary transition-colors hover:bg-primary hover:text-primary-foreground">Solicitar</button>
               </div>
             </article>
           ))}
         </div>
       </section>
+      </main>
 
-      <footer id="contacto" className="border-t border-border bg-card">
+      <footer id="contacto" className="scroll-mt-24 border-t border-border bg-card" aria-label="Contacto">
         <div className="mx-auto grid max-w-7xl gap-10 px-6 py-16 md:grid-cols-3">
           <div>
             <Logo />
@@ -132,32 +221,84 @@ function Index() {
           <div>
             <h4 className="font-display uppercase tracking-widest text-accent">Menú</h4>
             <ul className="mt-4 space-y-2 text-sm">
-              {nav.map((n) => (<li key={n.href}><a href={n.href} className="text-muted-foreground hover:text-primary">{n.label}</a></li>))}
+              {nav.map((n) => (<li key={n.href}><button type="button" onClick={() => scrollToSection(n.href.slice(1))} className="text-muted-foreground hover:text-primary">{n.label}</button></li>))}
             </ul>
           </div>
           <div>
             <h4 className="font-display uppercase tracking-widest text-accent">Contacto</h4>
             <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-              <li>WhatsApp: +51 999 999 999</li>
-              <li>ventas@gamesclothes.pe</li>
-              <li>Lima, Perú</li>
-              <li className="flex gap-4 pt-2"><a href="#" className="hover:text-primary">Instagram</a><a href="#" className="hover:text-primary">TikTok</a><a href="#" className="hover:text-primary">Facebook</a></li>
+              <li>WhatsApp: +51 972 332 824</li>
+              <li>Yape: +51 972 332 824</li>
+              <li>Envios a todo el Perú</li>
             </ul>
           </div>
         </div>
         <div className="border-t border-border py-6 text-center text-xs text-muted-foreground">
-          © 2026 Games Clothes. Producto de fans, no afiliado a Rockstar Games.
+          © 2026 Games Clothes. Producto de Fans.
         </div>
       </footer>
+      {selectedProduct && <OrderModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />}
     </div>
   );
 }
 
-function SectionTitle({ kicker, title }: { kicker: string; title: string }) {
+function OrderModal({ product, onClose }: { product: OrderProduct; onClose: () => void }) {
+  const detail = product.isCombo ? `Tallas: Jason ${product.jasonSize}, Lucia ${product.luciaSize}` : `Talla: ${product.size}`;
+  const message = encodeURIComponent(`Hola, quiero solicitar: ${product.name}\nPrecio: ${product.price}\n${detail}\n\nPagaré por Yape al +51 972 332 824.`);
+
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 p-4" role="dialog" aria-modal="true" aria-labelledby="order-title" aria-describedby="order-description" onMouseDown={onClose}>
+      <div className="relative max-h-[calc(100vh-2rem)] w-full max-w-lg overflow-y-auto rounded-md border border-border bg-card p-6 shadow-2xl" onMouseDown={(event) => event.stopPropagation()}>
+        <button type="button" onClick={onClose} className="absolute right-4 top-4 rounded-sm p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-primary" aria-label="Cerrar">
+          <X size={22} />
+        </button>
+        <p className="text-sm font-semibold uppercase tracking-[0.3em] text-accent">Tu pedido</p>
+        <h2 id="order-title" className="mt-2 pr-10 font-display text-3xl uppercase">{product.name}</h2>
+        <p className="mt-2 font-display text-3xl text-vice">{product.price}</p>
+
+        <div className="mt-6 rounded-sm border border-border bg-background p-4">
+          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Talla seleccionada</p>
+          <p className="mt-2 font-display text-xl uppercase">{detail}</p>
+        </div>
+
+        <div className="mt-6 rounded-sm border border-accent/40 bg-background p-4">
+          <p className="font-display text-lg uppercase text-accent">Pago por Yape</p>
+          <p id="order-description" className="mt-1 text-sm text-muted-foreground">Realiza el pago al siguiente número y envía la constancia por WhatsApp.</p>
+          <div className="mx-auto mt-4 h-56 w-56 overflow-hidden rounded-md bg-white p-1">
+            <img src="/qryape.png" alt="Código QR de Yape para pagar a Noel Moriano Quispe" className="h-full w-full scale-150 object-cover object-center" />
+          </div>
+          <p className="mt-3 text-center text-sm font-semibold">Noel Moriano Quispe</p>
+          <p className="mt-3 font-display text-2xl tracking-wide">+51 972 332 824</p>
+        </div>
+
+        <a href={`https://wa.me/${whatsappNumber}?text=${message}`} target="_blank" rel="noreferrer" className="mt-6 flex w-full items-center justify-center gap-2 rounded-sm bg-vice px-6 py-4 font-display uppercase tracking-widest text-primary-foreground shadow-glow transition-transform hover:scale-[1.02]">
+          <FaWhatsapp size={22} aria-hidden="true" /> Enviar pedido por WhatsApp
+        </a>
+      </div>
+    </div>
+  );
+}
+
+function CardSizePicker({ label, value, onChange }: { label: string; value: string; onChange: (size: string) => void }) {
+  return (
+    <fieldset>
+      <legend className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">{label}</legend>
+      <div className="grid grid-cols-4 gap-2">
+        {sizes.map((size) => (
+          <button key={size} type="button" onClick={() => onChange(size)} className={`rounded-sm border px-2 py-1.5 font-display text-base transition-colors ${value === size ? "border-vice bg-vice text-primary-foreground" : "border-border hover:border-primary"}`} aria-pressed={value === size}>
+            {size}
+          </button>
+        ))}
+      </div>
+    </fieldset>
+  );
+}
+
+function SectionTitle({ id, kicker, title }: { id: string; kicker: string; title: string }) {
   return (
     <div className="mb-14 text-center">
       <p className="text-sm font-semibold uppercase tracking-[0.4em] text-accent">{kicker}</p>
-      <h2 className="mt-3 font-display text-5xl uppercase md:text-7xl">{title}</h2>
+      <h2 id={id} className="mt-3 font-display text-5xl uppercase md:text-7xl">{title}</h2>
       <div className="mx-auto mt-6 h-1 w-24 bg-vice" />
     </div>
   );

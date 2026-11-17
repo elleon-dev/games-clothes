@@ -1,5 +1,15 @@
 # Dependencies
 node_modules/
+jspm_packages/
+.npm
+.pnpm-store/
+.bun/
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
 .pnp
 .pnp.js
 
@@ -11,6 +21,18 @@ dist-ssr/
 .vinxi/
 .tanstack/
 build/
+out/
+.next/
+.nuxt/
+.astro/
+.svelte-kit/
+.vercel/
+.wrangler/
+.netlify/
+.turbo/
+.parcel-cache/
+.vite/
+.cache/
 *.tsbuildinfo
 
 # Logs
@@ -30,15 +52,44 @@ lerna-debug.log*
 .env.production.local
 *.env.*
 !.env.example
+*.pem
+*.key
 
 # Editor & OS files
 .DS_Store
 Thumbs.db
 .idea/
+.kiro/
+.kombai/
+.cursor/
+.claude/
+.windsurf/
 .vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
 !.vscode/extensions.json
+*.code-workspace
+*.iml
+*.ipr
+*.iws
+*.swp
+*.swo
+*~
 *.sublime-project
 *.sublime-workspace
 
 # Testing & Coverage
 coverage/
+.nyc_output/
+.eslintcache
+.stylelintcache
+.prettiercache
+playwright-report/
+test-results/
+
+# Local databases
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal

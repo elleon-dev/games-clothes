@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import pareja from "@/assets/jason-lucia-pareja.png";
 import jason from "@/assets/polo-jason.jpeg";
@@ -48,6 +48,18 @@ const nav = [
 ];
 
 const individuales = [
+  {
+    img: jason,
+    name: "Polo Jason",
+    desc: "Polo inspirado en Jason, protagonista de GTA VI",
+    price: "S/ 99",
+  },
+  {
+    img: lucia,
+    name: "Polo Lucia",
+    desc: "Polo inspirado en Lucia, protagonista de GTA VI",
+    price: "S/ 99",
+  },
   {
     img: leonida,
     name: "Leonida Surf",
@@ -157,7 +169,9 @@ function LaunchCountdown() {
       <time
         dateTime="2026-11-19T00:00:00-05:00"
         className="mt-3 block text-xs text-muted-foreground"
-      ></time>
+      >
+        19 de noviembre · 00:00 h · Perú
+      </time>
     </div>
   );
 }
@@ -169,11 +183,14 @@ function Index() {
   const [individualSizes, setIndividualSizes] = useState<
     Record<string, string>
   >({
+    "Polo Jason": "M",
+    "Polo Lucia": "M",
     "Leonida Surf": "M",
     "Vice City Leonida": "M",
   });
   const [jasonSize, setJasonSize] = useState("M");
   const [luciaSize, setLuciaSize] = useState("M");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <div id="top" className="min-h-screen bg-background text-foreground">
@@ -182,7 +199,7 @@ function Index() {
           <Logo />
           <nav
             aria-label="Navegación principal"
-            className="flex gap-6 font-display text-base uppercase tracking-[0.12em]"
+            className="hidden gap-6 font-display text-base uppercase tracking-[0.12em] md:flex"
           >
             {nav.map((n) => (
               <button
@@ -195,7 +212,40 @@ function Index() {
               </button>
             ))}
           </nav>
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen((isOpen) => !isOpen)}
+            className="rounded-sm p-2 text-primary md:hidden"
+            aria-label={mobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-navigation"
+          >
+            {mobileMenuOpen ? <X size={26} /> : <Menu size={26} />}
+          </button>
         </div>
+        {mobileMenuOpen && (
+          <nav
+            id="mobile-navigation"
+            aria-label="Navegación móvil"
+            className="border-t border-border bg-card px-6 py-4 md:hidden"
+          >
+            <div className="mx-auto grid max-w-7xl gap-2 font-display text-xl uppercase tracking-[0.12em]">
+              {nav.map((n) => (
+                <button
+                  key={n.href}
+                  type="button"
+                  onClick={() => {
+                    scrollToSection(n.href.slice(1));
+                    setMobileMenuOpen(false);
+                  }}
+                  className="rounded-sm px-3 py-3 text-left text-muted-foreground transition-colors hover:bg-muted hover:text-primary"
+                >
+                  {n.label}
+                </button>
+              ))}
+            </div>
+          </nav>
+        )}
       </header>
 
       <section className="relative flex h-screen items-center justify-center overflow-hidden">
@@ -347,8 +397,8 @@ function Index() {
                   loading="lazy"
                   className="aspect-square w-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
-                <div className="flex items-end justify-between gap-4 p-6">
-                  <div>
+                <div className="flex flex-col gap-5 p-6 sm:flex-row sm:items-end sm:justify-between">
+                  <div className="w-full">
                     <h3 className="font-display text-2xl uppercase">
                       {p.name}
                     </h3>
@@ -378,7 +428,7 @@ function Index() {
                         size: individualSizes[p.name] ?? "M",
                       })
                     }
-                    className="rounded-sm border border-primary px-6 py-3 font-display uppercase tracking-widest text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+                    className="w-full rounded-sm border border-primary px-6 py-3 font-display uppercase tracking-widest text-primary transition-colors hover:bg-primary hover:text-primary-foreground sm:w-auto"
                   >
                     Solicitar
                   </button>
@@ -551,7 +601,7 @@ function CardSizePicker({
       <legend className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
         {label}
       </legend>
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         {sizes.map((size) => (
           <button
             key={size}

@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import pareja from "@/assets/jason-lucia-pareja.png.asset.json";
-import jason from "@/assets/polo-jason.jpeg.asset.json";
-import lucia from "@/assets/polo-lucia.jpeg.asset.json";
-import leonida from "@/assets/leonida.jpg.asset.json";
-import blanco from "@/assets/polo_blanco.jpg.asset.json";
+import pareja from "@/assets/jason-lucia-pareja.png";
+import jason from "@/assets/polo-jason.jpeg";
+import lucia from "@/assets/polo-lucia.jpeg";
+import leonida from "@/assets/leonida.jpg";
+import blanco from "@/assets/polo_blanco.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -26,8 +26,8 @@ const nav = [
 ];
 
 const individuales = [
-  { img: leonida.url, name: "Leonida Surf", desc: "Polo negro · Manatí surfer", price: "S/ 59" },
-  { img: blanco.url, name: "Vice City Leonida", desc: "Polo blanco · Gator cocktail", price: "S/ 59" },
+  { img: leonida, name: "Leonida Surf", desc: "Polo negro · Manatí surfer", price: "S/ 59" },
+  { img: blanco, name: "Vice City Leonida", desc: "Polo blanco · Gator cocktail", price: "S/ 59" },
 ];
 
 function Logo() {
@@ -84,10 +84,10 @@ function Index() {
         <SectionTitle kicker="Jason & Lucia" title="Combo Pareja" />
         <div className="grid items-stretch gap-10 md:grid-cols-2">
           <figure className="group overflow-hidden rounded-md border border-border bg-card">
-            <img src={pareja.url} alt="Jason y Lucia con los polos del combo" loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+            <img src={pareja} alt="Jason y Lucia con los polos del combo" loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
           </figure>
           <div className="grid gap-6 sm:grid-cols-2">
-            {[{ img: jason.url, n: "Polo Jason" }, { img: lucia.url, n: "Polo Lucia" }].map((p) => (
+            {[{ img: jason, n: "Polo Jason" }, { img: lucia, n: "Polo Lucia" }].map((p) => (
               <figure key={p.n} className="group overflow-hidden rounded-md border border-border bg-card">
                 <img src={p.img} alt={p.n} loading="lazy" className="aspect-square w-full object-cover transition-transform duration-700 group-hover:scale-105" />
                 <figcaption className="p-4 font-display text-xl uppercase">{p.n}</figcaption>

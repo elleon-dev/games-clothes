@@ -226,3 +226,14 @@
 @utility shadow-glow {
   box-shadow: var(--shadow-glow);
 }
+
+/* Ocultar badge Powered by Netlify */
+#nl-badge-frame,
+iframe[title="Powered by Netlify"],
+iframe[id^="nl-badge"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+

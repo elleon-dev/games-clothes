@@ -1,6 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Menu, X } from "lucide-react";
+import {
+  Check,
+  Copy,
+  Menu,
+  MessageCircle,
+  Minus,
+  Plus,
+  ShieldCheck,
+  Shirt,
+  Truck,
+  X,
+} from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import pareja from "@/assets/jason-lucia-pareja.png";
 import jason from "@/assets/polo-jason.jpeg";
@@ -37,7 +48,16 @@ export const Route = createFileRoute("/")({
           "Polos inspirados en GTA VI con tallas S a XL. Compra individual o el combo Jason & Lucia.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://gamesclothes.store" },
+      {
+        property: "og:image",
+        content: "https://gamesclothes.store/og-image.png",
+      },
       { name: "twitter:card", content: "summary_large_image" },
+      {
+        name: "twitter:image",
+        content: "https://gamesclothes.store/og-image.png",
+      },
     ],
   }),
   component: Index,
@@ -55,7 +75,9 @@ type IndividualProduct = {
   img: string;
   name: string;
   desc: string;
+  designTag?: string;
   price: string;
+  unitPrice: number;
   hasColorVariants?: boolean;
   colorImages?: Record<ColorVariant, string>;
 };
@@ -66,26 +88,32 @@ const individuales: IndividualProduct[] = [
     name: "Polo Jason",
     desc: "Polo inspirado en Jason, protagonista de GTA VI",
     price: "S/ 99",
+    unitPrice: 99,
   },
   {
     img: lucia,
     name: "Polo Lucia",
     desc: "Polo inspirado en Lucia, protagonista de GTA VI",
     price: "S/ 99",
+    unitPrice: 99,
   },
   {
     img: poloNegro,
     name: "Leonida Surf",
-    desc: "Polo negro · Manatí surfer",
+    desc: "Manatí surfer",
+    designTag: "Manatí surfer",
     price: "S/ 99",
+    unitPrice: 99,
     hasColorVariants: true,
     colorImages: { Blanco: poloBlanco, Negro: poloNegro },
   },
   {
     img: blanco,
     name: "Vice City Leonida",
-    desc: "Polo blanco · Gator cocktail",
+    desc: "Gator cocktail",
+    designTag: "Gator cocktail",
     price: "S/ 99",
+    unitPrice: 99,
     hasColorVariants: true,
     colorImages: { Blanco: blanco, Negro: viceCityNegro },
   },
@@ -94,6 +122,7 @@ const individuales: IndividualProduct[] = [
 type OrderProduct = {
   name: string;
   price: string;
+  unitPrice: number;
   isCombo?: boolean;
   size?: string;
   color?: string;
@@ -101,8 +130,10 @@ type OrderProduct = {
   luciaSize?: string;
 };
 
-const sizes = ["S", "M", "X", "XL"];
+const sizes = ["S", "M", "L", "XL"];
 const whatsappNumber = "51972332824";
+const yapeDisplayNumber = "+51 972 332 824";
+const yapeRawNumber = "972332824";
 const colorOptions: Array<{ label: ColorVariant; className: string }> = [
   { label: "Blanco", className: "border-border bg-white text-black" },
   { label: "Negro", className: "border-white/30 bg-black text-white" },
@@ -312,6 +343,32 @@ function Index() {
 
       <main>
         <section
+          aria-label="Beneficios"
+          className="border-y border-border bg-card/60"
+        >
+          <div className="mx-auto grid max-w-7xl grid-cols-2 gap-6 px-6 py-6 md:grid-cols-4">
+            {[
+              { icon: Truck, label: "Envíos a todo el Perú" },
+              { icon: Shirt, label: "Tallas S · M · L · XL" },
+              { icon: ShieldCheck, label: "Pago seguro con Yape" },
+              { icon: MessageCircle, label: "Atención por WhatsApp" },
+            ].map(({ icon: Icon, label }) => (
+              <div
+                key={label}
+                className="flex items-center justify-center gap-3 text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground sm:text-sm"
+              >
+                <Icon
+                  size={18}
+                  className="shrink-0 text-primary"
+                  aria-hidden="true"
+                />
+                <span>{label}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section
           id="pareja"
           className="mx-auto max-w-7xl scroll-mt-24 px-6 py-28"
           aria-labelledby="pareja-title"
@@ -378,13 +435,22 @@ function Index() {
                 onChange={setLuciaSize}
               />
             </div>
-            <p className="mt-6 font-display text-5xl">S/ 179</p>
+            <div className="mt-6 flex flex-wrap items-baseline justify-center gap-3">
+              <span className="font-display text-2xl text-muted-foreground line-through">
+                S/ 198
+              </span>
+              <p className="font-display text-5xl">S/ 179</p>
+              <span className="rounded-sm border border-primary/40 bg-primary/15 px-2.5 py-1 text-xs font-semibold uppercase tracking-widest text-primary">
+                Ahorra S/ 19
+              </span>
+            </div>
             <button
               type="button"
               onClick={() =>
                 setSelectedProduct({
                   name: "Combo Pareja Jason & Lucia",
                   price: "S/ 179",
+                  unitPrice: 179,
                   isCombo: true,
                   jasonSize,
                   luciaSize,
@@ -411,6 +477,10 @@ function Index() {
             {individuales.map((p) => {
               const selectedColor = individualColors[p.name] ?? "Negro";
               const selectedImage = p.colorImages?.[selectedColor] ?? p.img;
+              const displayDesc =
+                p.hasColorVariants && p.designTag
+                  ? `Polo ${selectedColor.toLowerCase()} · ${p.designTag}`
+                  : p.desc;
 
               return (
                 <article
@@ -428,7 +498,9 @@ function Index() {
                       <h3 className="font-display text-2xl uppercase">
                         {p.name}
                       </h3>
-                      <p className="text-sm text-muted-foreground">{p.desc}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {displayDesc}
+                      </p>
                       <div className="mt-4">
                         {p.hasColorVariants && (
                           <ColorPicker
@@ -462,6 +534,7 @@ function Index() {
                         setSelectedProduct({
                           name: p.name,
                           price: p.price,
+                          unitPrice: p.unitPrice,
                           size: individualSizes[p.name] ?? "M",
                           ...(p.hasColorVariants
                             ? { color: selectedColor }
@@ -516,9 +589,18 @@ function Index() {
               Contacto
             </h4>
             <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-              <li>WhatsApp: +51 972 332 824</li>
-              <li>Yape: +51 972 332 824</li>
-              <li>Envios a todo el Perú</li>
+              <li>
+                <a
+                  href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent("Hola, quiero consultar sobre los polos de Games Clothes.")}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-primary"
+                >
+                  WhatsApp: {yapeDisplayNumber}
+                </a>
+              </li>
+              <li>Yape: {yapeDisplayNumber}</li>
+              <li>Envíos a todo el Perú</li>
             </ul>
           </div>
         </div>
@@ -530,6 +612,18 @@ function Index() {
           </span>
         </div>
       </footer>
+      {!selectedProduct && (
+        <a
+          href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent("Hola, tengo una consulta sobre los polos de GTA VI.")}`}
+          target="_blank"
+          rel="noreferrer"
+          aria-label="Consultar por WhatsApp"
+          className="fixed bottom-5 right-5 z-40 flex items-center gap-2 rounded-full bg-[#25D366] px-4 py-3 text-sm font-semibold text-black shadow-lg transition-transform hover:scale-105"
+        >
+          <FaWhatsapp size={20} aria-hidden="true" />
+          <span className="hidden sm:inline">¿Dudas? Escríbenos</span>
+        </a>
+      )}
       {selectedProduct && (
         <OrderModal
           product={selectedProduct}
@@ -547,13 +641,40 @@ function OrderModal({
   product: OrderProduct;
   onClose: () => void;
 }) {
+  const [quantity, setQuantity] = useState(1);
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
+  const totalPrice = product.unitPrice * quantity;
+  const formattedTotal = `S/ ${totalPrice}`;
   const detail = product.isCombo
     ? `Tallas: Jason ${product.jasonSize}, Lucia ${product.luciaSize}`
     : `Talla: ${product.size}`;
   const colorDetail = product.color ? `\nColor: ${product.color}` : "";
+  const quantityDetail =
+    quantity > 1
+      ? `\nCantidad: ${quantity} (${product.price} c/u)\nTotal: ${formattedTotal}`
+      : `\nPrecio: ${product.price}`;
   const message = encodeURIComponent(
-    `Hola, quiero solicitar: ${product.name}\nPrecio: ${product.price}${colorDetail}\n${detail}\n\nPagaré por Yape al +51 972 332 824.`,
+    `Hola, quiero solicitar: ${product.name}${quantityDetail}${colorDetail}\n${detail}\n\nQuedo atento para confirmar stock y coordinar el pago por Yape y envío.`,
   );
+
+  const handleCopyYape = async () => {
+    try {
+      await navigator.clipboard.writeText(yapeRawNumber);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Fallback silencioso si el navegador bloquea el portapapeles
+    }
+  };
 
   return (
     <div
@@ -585,36 +706,93 @@ function OrderModal({
         >
           {product.name}
         </h2>
-        <p className="mt-2 font-display text-3xl text-vice">{product.price}</p>
-
-        <div className="mt-6 rounded-sm border border-border bg-background p-4">
-          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-            Talla seleccionada
-          </p>
-          <p className="mt-2 font-display text-xl uppercase">{detail}</p>
-          {product.color && (
-            <p className="mt-2 text-sm text-muted-foreground">
-              Color: {product.color}
-            </p>
+        <div className="mt-2 flex items-baseline gap-3">
+          <p className="font-display text-3xl text-vice">{formattedTotal}</p>
+          {quantity > 1 && (
+            <span className="text-xs text-muted-foreground">
+              ({quantity} × {product.price})
+            </span>
           )}
         </div>
 
-        <div className="mt-6 rounded-sm border border-accent/40 bg-background p-4">
+        <div className="mt-5 flex flex-wrap items-center justify-between gap-4 rounded-sm border border-border bg-background p-4">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+              Selección
+            </p>
+            <p className="mt-1 font-display text-xl uppercase">{detail}</p>
+            {product.color && (
+              <p className="mt-1 text-sm text-muted-foreground">
+                Color: {product.color}
+              </p>
+            )}
+          </div>
+          <div className="flex flex-col items-end">
+            <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+              Cantidad
+            </span>
+            <div className="mt-1.5 flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                disabled={quantity <= 1}
+                aria-label="Disminuir cantidad"
+                className="flex h-8 w-8 items-center justify-center rounded-sm border border-border text-foreground transition-colors hover:border-primary disabled:opacity-40"
+              >
+                <Minus size={14} />
+              </button>
+              <span className="min-w-6 text-center font-display text-lg">
+                {quantity}
+              </span>
+              <button
+                type="button"
+                onClick={() => setQuantity((q) => Math.min(10, q + 1))}
+                disabled={quantity >= 10}
+                aria-label="Aumentar cantidad"
+                className="flex h-8 w-8 items-center justify-center rounded-sm border border-border text-foreground transition-colors hover:border-primary disabled:opacity-40"
+              >
+                <Plus size={14} />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <ol className="mt-5 grid grid-cols-3 gap-2 text-center text-[11px] text-muted-foreground">
+          <li className="rounded-sm border border-border/70 bg-background/60 p-2">
+            <span className="block font-display text-sm text-primary">1</span>
+            Envía tu pedido
+          </li>
+          <li className="rounded-sm border border-border/70 bg-background/60 p-2">
+            <span className="block font-display text-sm text-primary">2</span>
+            Confirmamos envío
+          </li>
+          <li className="rounded-sm border border-border/70 bg-background/60 p-2">
+            <span className="block font-display text-sm text-primary">3</span>
+            Pagas por Yape
+          </li>
+        </ol>
+
+        <a
+          href={`https://wa.me/${whatsappNumber}?text=${message}`}
+          target="_blank"
+          rel="noreferrer"
+          className="mt-5 flex w-full items-center justify-center gap-2 rounded-sm bg-vice px-6 py-4 font-display uppercase tracking-widest text-primary-foreground shadow-glow transition-transform hover:scale-[1.02]"
+        >
+          <FaWhatsapp size={22} aria-hidden="true" /> Enviar pedido por WhatsApp
+        </a>
+
+        <div className="mt-5 rounded-sm border border-accent/40 bg-background p-4">
           <p className="font-display text-lg uppercase text-accent">
             Pago por Yape
           </p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Pedidos abiertos en cualquier fecha. Coordinamos la entrega por
-            WhatsApp.
-          </p>
           <p
             id="order-description"
-            className="mt-3 text-sm text-muted-foreground"
+            className="mt-1 text-xs text-muted-foreground"
           >
-            Realiza el pago al siguiente número y envía la constancia por
-            WhatsApp.
+            Pedidos abiertos en cualquier fecha. Puedes escribirnos primero o
+            yapear y enviar tu constancia por WhatsApp.
           </p>
-          <div className="mx-auto mt-4 h-56 w-56 overflow-hidden rounded-md bg-white p-1">
+          <div className="mx-auto mt-4 h-52 w-52 overflow-hidden rounded-md bg-white p-1">
             <img
               src="/qryape.png"
               alt="Código QR de Yape para pagar a Noel Moriano Quispe"
@@ -624,19 +802,27 @@ function OrderModal({
           <p className="mt-3 text-center text-sm font-semibold">
             Noel Moriano Quispe
           </p>
-          <p className="mt-3 font-display text-2xl tracking-wide">
-            +51 972 332 824
-          </p>
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+            <p className="font-display text-2xl tracking-wide">
+              {yapeDisplayNumber}
+            </p>
+            <button
+              type="button"
+              onClick={handleCopyYape}
+              className="inline-flex items-center gap-1.5 rounded-sm border border-primary/50 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+            >
+              {copied ? (
+                <>
+                  <Check size={14} aria-hidden="true" /> ¡Copiado!
+                </>
+              ) : (
+                <>
+                  <Copy size={14} aria-hidden="true" /> Copiar número
+                </>
+              )}
+            </button>
+          </div>
         </div>
-
-        <a
-          href={`https://wa.me/${whatsappNumber}?text=${message}`}
-          target="_blank"
-          rel="noreferrer"
-          className="mt-6 flex w-full items-center justify-center gap-2 rounded-sm bg-vice px-6 py-4 font-display uppercase tracking-widest text-primary-foreground shadow-glow transition-transform hover:scale-[1.02]"
-        >
-          <FaWhatsapp size={22} aria-hidden="true" /> Enviar pedido por WhatsApp
-        </a>
       </div>
     </div>
   );

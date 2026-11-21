@@ -604,7 +604,8 @@ function OrderModal({
             Pago por Yape
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Tu pedido estará listo para el 19 de noviembre.
+            Pedidos abiertos en cualquier fecha. Coordinamos la entrega por
+            WhatsApp.
           </p>
           <p
             id="order-description"
